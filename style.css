@@ -1,0 +1,111 @@
+/* General Body and Font Styles */
+body { 
+    font-family: 'Inter', sans-serif; 
+    background-color: #f3f4f6; 
+}
+
+/* Preview Container for the Report */
+.preview-container { 
+    font-family: 'Times New Roman', Times, serif; 
+    color: #000; 
+    line-height: 1.5; 
+    font-size: 12pt; 
+}
+
+.preview-container h1, .preview-container h2, .preview-container h3, .preview-container h4 { 
+    font-weight: bold; 
+    margin-top: 1.2rem; 
+    margin-bottom: 0.6rem; 
+}
+
+/* Page Break Utilities */
+.page-break { 
+    page-break-before: always; 
+}
+
+#cover-page {
+    page-break-after: always;
+}
+
+/* Paragraph and List Styling */
+.preview-container p { 
+    text-align: justify; 
+    margin-bottom: 1rem; 
+    text-indent: 2em; 
+}
+
+.preview-container .no-indent { 
+    text-indent: 0; 
+}
+
+.preview-container ul, .preview-container ol { 
+    padding-left: 2.5em; 
+    margin-bottom: 1rem; 
+}
+
+.preview-container li { 
+    text-align: justify; 
+    margin-bottom: 0.25rem; 
+}
+
+/* Table Styling */
+.preview-container table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    margin-bottom: 1rem; 
+    font-size: 11pt; 
+}
+
+.preview-container th, .preview-container td { 
+    border: 1px solid black; 
+    padding: 6px; 
+    text-align: left; 
+    vertical-align: top; 
+}
+
+/* Special Tables without Borders */
+.preview-container .no-border-table td, 
+.preview-container .no-border-table th,
+.preview-container .toc-table td, 
+.preview-container .toc-table th { 
+    border: none !important; 
+    padding: 1px 0;
+}
+
+.preview-container .toc-dots { 
+    border-bottom: 1px dotted black; 
+}
+
+/* UI Component Styles */
+.loader { 
+    border: 4px solid #f3f3f3; 
+    border-top: 4px solid #3498db; 
+    border-radius: 50%; 
+    width: 40px; 
+    height: 40px; 
+    animation: spin 1s linear infinite; 
+}
+
+@keyframes spin { 
+    0% { transform: rotate(0deg); } 
+    100% { transform: rotate(360deg); } 
+}
+
+.disabled-section { 
+    background-color: #e9ecef; 
+    opacity: 0.8; 
+    pointer-events: none; 
+}
+
+/* Smart Layout Rules for Printing/PDF */
+.preview-container h3, .preview-container h4 {
+    page-break-after: avoid; 
+    page-break-inside: avoid;
+}
+
+.preview-container p, 
+.preview-container li, 
+.preview-container .chart-container, 
+.preview-container table {
+    page-break-inside: avoid; 
+}
