@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SKM Report Builder</title>
+    
+    <!-- Pustaka Eksternal -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Link ke File CSS Lokal Anda -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="text-gray-800">
+
+    <!-- Modal untuk menampilkan peringatan atau informasi -->
+    <div id="alert-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+        <div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white">
+            <div class="mt-3 text-center">
+                <div id="modal-icon-container" class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                    <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                </div>
+                <h3 id="modal-title" class="text-lg leading-6 font-medium text-gray-900">Peringatan</h3>
+                <div class="mt-2 px-7 py-3">
+                    <p id="modal-message" class="text-sm text-gray-500"></p>
+                </div>
+                <div class="items-center px-4 py-3">
+                    <button id="modal-close-button" class="px-4 py-2 bg-blue-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                        Tutup
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mx-auto p-4 md:p-8">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-900">SKM Report Builder</h1>
+            <p class="text-lg text-gray-600 mt-2">Sesuai Templat Laporan SKM</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Kolom Kontrol/Input -->
+            <div class="bg-white p-6 rounded-lg shadow-lg space-y-6">
+                
+                <div id="phase-1">
+                    <h2 class="text-2xl font-semibold border-b pb-2 mb-4 flex items-center"><span class="text-3xl mr-3">1️⃣</span> Persiapan & Unggah Data</h2>
+                    <p class="mb-4 text-gray-600">Unduh templat, isi data survei Anda, lalu unggah kembali ke sini.</p>
+                    
+                    <button id="download-template-button" class="inline-flex items-center bg-green-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-700 transition duration-300">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        Unduh Templat Excel
+                    </button>
+                    
+                    <div class="mt-4">
+                        <label for="file-upload" class="block text-sm font-medium text-gray-700 mb-1">Pilih File Excel:</label>
+                        <input id="file-upload" type="file" accept=".xlsx, .xls" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"/>
+                    </div>
+                    <button id="process-button" class="mt-4 w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition duration-300 flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        Proses File
+                    </button>
+                </div>
+                <div id="loading-spinner" class="hidden flex-col items-center justify-center text-center">
+                    <div class="loader"></div>
+                    <p class="mt-3 text-gray-600 font-medium">Mengolah data Anda...</p>
+                </div>
+
+                <div id="main-control-panel" class="hidden space-y-6">
+                    <div>
+                        <h2 class="text-2xl font-semibold border-b pb-2 mb-4 flex items-center"><span class="text-3xl mr-3">2️⃣</span> Analisis & Rencana Tindak Lanjut (AI)</h2>
+                        
+                        <!-- Input untuk API Key -->
+                        <div class="mb-4">
+                            <label for="api-key-input" class="block text-sm font-medium text-gray-700">Gemini API Key Anda:</label>
+                            <input type="password" id="api-key-input" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Masukkan API Key di sini">
+                            <p class="mt-1 text-xs text-gray-500">Kunci API tidak disimpan dan hanya digunakan untuk sesi ini. Dapatkan di <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-blue-600 underline">Google AI Studio</a>.</p>
+                        </div>
+                        
+                        <button id="generate-ai-button" class="w-full bg-purple-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-purple-700 transition duration-300 flex items-center justify-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+                            Generate Analisis, RTL & Kesimpulan
+                        </button>
+                        <div id="ai-loading-spinner" class="hidden flex-col items-center justify-center text-center py-4">
+                            <div class="loader"></div>
+                            <p class="mt-3 text-gray-600 font-medium">AI sedang berpikir... Mohon tunggu.</p>
+                        </div>
+                        <div id="ai-results" class="hidden space-y-4 mt-4">
+                            <div>
+                                <label for="analisis-textarea" class="block text-sm font-medium text-gray-700 mb-1">Edit Analisis Utama (BAB IV - 4.1)</label>
+                                <textarea id="analisis-textarea" rows="8" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                            </div>
+                             <div>
+                                <label for="kesimpulan-textarea" class="block text-sm font-medium text-gray-700 mb-1">Edit Kesimpulan (BAB V)</label>
+                                <textarea id="kesimpulan-textarea" rows="8" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="phase-5">
+                         <h2 class="text-2xl font-semibold border-b pb-2 mb-4 flex items-center"><span class="text-3xl mr-3">3️⃣</span> Finalisasi & Unduh</h2>
+                        <div class="space-y-4">
+                            <button id="download-pdf-button" class="w-full bg-red-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-red-700 transition duration-300 flex items-center justify-center">
+                                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20"><path d="M4 2a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V4a2 2 0 00-2-2H4zm0 1h12a1 1 0 011 1v12a1 1 0 01-1 1H4a1 1 0 01-1-1V4a1 1 0 011-1zm5 2v4h2V5h-2zm-2 6v2h6v-2H7z"></path></svg>
+                                Unduh Laporan (PDF)
+                            </button>
+                            <div id="docx-info" class="p-4 bg-blue-50 border-l-4 border-blue-400 text-blue-800">
+                                <p class="font-bold">Butuh Mengedit Laporan?</p>
+                                <p class="text-sm mt-1">Untuk pengeditan lebih lanjut, konversikan file PDF yang telah diunduh ke format Microsoft Word (.docx) menggunakan salah satu layanan online gratis berikut:</p>
+                                <ul class="list-disc list-inside text-sm mt-2 space-y-1">
+                                    <li><a href="https://smallpdf.com/pdf-to-word" target="_blank" class="underline hover:text-blue-900 font-medium">Smallpdf PDF to Word</a></li>
+                                    <li><a href="https://www.ilovepdf.com/pdf_to_word" target="_blank" class="underline hover:text-blue-900 font-medium">iLovePDF PDF to Word</a></li>
+                                    <li><a href="https://www.adobe.com/acrobat/online/pdf-to-word.html" target="_blank" class="underline hover:text-blue-900 font-medium">Adobe PDF to Word Converter</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                     <button id="reset-button" class="mt-6 w-full bg-gray-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-gray-600 transition duration-300 flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5M12 19l-7-7 7-7"></path></svg>
+                        Mulai Ulang
+                    </button>
+                </div>
+            </div>
+
+            <!-- Kolom Pratinjau -->
+            <div class="bg-gray-200 p-6 rounded-lg shadow-inner">
+                <h2 class="text-2xl font-semibold mb-4 text-center">Pratinjau Laporan</h2>
+                <div id="preview-wrapper" class="preview-container overflow-y-auto h-[1200px]">
+                    <div id="report-preview-content" class="bg-white p-8">
+                        <i>Silakan unggah dan proses file Excel untuk melihat pratinjau laporan.</i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Link ke File JavaScript Lokal Anda -->
+    <script src="script.js"></script>
+</body>
+</html>
