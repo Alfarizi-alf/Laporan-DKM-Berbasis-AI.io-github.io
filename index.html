@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Perencanaan Perbaikan Strategis (PPS)</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- React Libraries -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    
+    <!-- Babel for JSX Transpilation -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- External Libraries -->
+    <script src="https://unpkg.com/lucide-react@0.378.0/dist/lucide-react.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dropzone/14.2.3/react-dropzone.umd.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <!-- 
+      ================================================================
+      PENTING: KONFIGURASI FIREBASE
+      Ganti nilai di bawah ini dengan konfigurasi Firebase proyek Anda.
+      Anda bisa mendapatkannya dari Pengaturan Proyek di Firebase Console.
+      ================================================================
+    -->
+    <script>
+      // Ganti dengan konfigurasi Firebase Anda
+      const __firebase_config = JSON.stringify({
+        apiKey: "GANTI_DENGAN_API_KEY_ANDA",
+        authDomain: "GANTI_DENGAN_AUTH_DOMAIN_ANDA",
+        projectId: "GANTI_DENGAN_PROJECT_ID_ANDA",
+        storageBucket: "GANTI_DENGAN_STORAGE_BUCKET_ANDA",
+        messagingSenderId: "GANTI_DENGAN_MESSAGING_SENDER_ID_ANDA",
+        appId: "GANTI_DENGAN_APP_ID_ANDA"
+      });
+
+      // ID unik untuk aplikasi ini, digunakan untuk path Firestore
+      const __app_id = "pps-accreditation-app"; 
+      
+      // Token ini biasanya disediakan oleh lingkungan hosting.
+      // Untuk penggunaan mandiri, biarkan tidak terdefinisi agar login anonim digunakan.
+      const __initial_auth_token = undefined; 
+    </script>
+    <!-- ============================================================ -->
+
+</head>
+<body class="bg-slate-900">
+    <noscript>Anda perlu mengaktifkan JavaScript untuk menjalankan aplikasi ini.</noscript>
+    <div id="root"></div>
+
+    <!-- Main Application Script -->
+    <script type="text/babel" data-type="module" src="script.js"></script>
+</body>
+</html>
